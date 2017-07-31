@@ -20,13 +20,7 @@ renderModuleFactory(AppServerModuleNgFactory, {
   document: index,
   url: '/',
   extraProviders: [
-  {
-      provide: NgModuleFactoryLoader,
-      useClass: a.ModuleMapNgFactoryLoader
-    },
-
-    a.provideModuleMap(LAZY_MODULE_MAP),
-      a.ModuleMapLoaderModule
+    a.provideModuleMap(LAZY_MODULE_MAP)
    ]
 })
 .then(html => fs.writeFileSync('dist/index.html', html));
