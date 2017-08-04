@@ -7,7 +7,13 @@
         {
           "type": "node",
           "request": "launch",
-          "name": "Launch Program",
+          "name": "Routes",
+          "program": "${workspaceRoot}/routes.js"
+        },
+        {
+          "type": "node",
+          "request": "launch",
+          "name": "PreRender",
           "program": "${workspaceRoot}/prerender.js"
         }
     ]

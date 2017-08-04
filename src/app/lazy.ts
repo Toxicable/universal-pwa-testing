@@ -14,7 +14,10 @@ export class Lazy {
 
 @NgModule({
   imports: [
-    RouterModule.forChild([{ path: '', component: Lazy }])
+    RouterModule.forChild([
+      { path: '', component: Lazy },
+      {path: 'lazyAbout', component: Lazy}
+    ])
   ],
   declarations: [Lazy],
   entryComponents: [Lazy]
