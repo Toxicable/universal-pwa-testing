@@ -12,20 +12,22 @@ var hash = mainFiles[0].split('.')[1];
 
 var { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require(`./dist-server/main.${hash}.bundle`);
 
-Promise.all(createModule(AppServerModuleNgFactory))
-  .then(routes => {
-    var flat = flatten(routes);
-    var reallyFlat = superFlatten(flat).map(path => path ? path : '/');
-    console.log(JSON.stringify(reallyFlat))
-  })
+const ngZone = new NgZone({ enableLongStackTrace: false });
+var rootInjector = ReflectiveInjector.resolveAndCreate(
+  [
+    { provide: NgZone, useValue: ngZone },
+    provideModuleMap(LAZY_MODULE_MAP)
+  ],
+  platformServer().injector
+);
 
 function superFlatten(array) {
-   return !Array.isArray(array) ? array : [].concat.apply([], array.map(superFlatten));
+  return !Array.isArray(array) ? array : [].concat.apply([], array.map(superFlatten));
 }
 
-function flatten(routes){
+function flatten(routes) {
   return routes.map(route => {
-    if(!route.children){
+    if (!route.children) {
       return route.path;
     } else {
       return flatten(route.children).map(childRoute => route.path + childRoute)
@@ -33,22 +35,13 @@ function flatten(routes){
   })
 }
 
-var loader;
-function createModule(factory) {
-  const ngZone = new NgZone({ enableLongStackTrace: false });
-  const injector = ReflectiveInjector.resolveAndCreate([
-    { provide: NgZone, useValue: ngZone },
-    provideModuleMap(LAZY_MODULE_MAP)
-  ],
-    platformServer().injector);
+function createModule(factory, parentInjector) {
 
-  var moduleRef = factory.create(injector);
+  var moduleRef = factory.create(parentInjector ? parentInjector : rootInjector);
+  var injector = moduleRef.injector;
 
-  var routes = moduleRef.injector.get(ROUTES);
-  try {
-    //childs don't get the provider
-    loader = moduleRef.injector.get(NgModuleFactoryLoader)
-  } catch (e) { }
+  var routes = injector.get(ROUTES);
+  var loader = injector.get(NgModuleFactoryLoader);
 
   return routes.reduce((a, b) => a.concat(b))
     .map(route => {
@@ -58,7 +51,7 @@ function createModule(factory) {
       delete route.component;
       if (route.loadChildren) {
         return loader.load(route.loadChildren)
-          .then(factory => Promise.all(createModule(factory))
+          .then(factory => Promise.all(createModule(factory, injector))
             .then(childRoutes => {
               delete route.loadChildren;
               route.children = childRoutes;
@@ -71,3 +64,10 @@ function createModule(factory) {
       }
     })
 }
+
+Promise.all(createModule(AppServerModuleNgFactory))
+  .then(routes => {
+    var flat = flatten(routes);
+    var reallyFlat = superFlatten(flat).map(path => path ? path : '/');
+    console.log(JSON.stringify(reallyFlat))
+  })

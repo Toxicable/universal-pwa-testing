@@ -15,8 +15,7 @@ var { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require(`./dist-server/main.
 // Load the index.html file.
 var index = fs.readFileSync('./dist/index.html', 'utf8');
 
-var pathsString = exeSync('node routes')
-  .toString();
+var pathsString = exeSync('node routes').toString();
 var paths = JSON.parse(pathsString);
 
 paths.forEach(path => {
@@ -29,7 +28,7 @@ paths.forEach(path => {
     ]
   })
   .then(html => {
-    fs.writeFileSync(`dist/${path.replace(/\//g, '-')}.index.html`, html)
+    fs.writeFileSync(`dist/${path.replace(/\//g, '|')}.index.html`, html)
   });
 })
 
