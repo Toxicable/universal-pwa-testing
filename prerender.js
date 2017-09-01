@@ -28,7 +28,7 @@ paths.forEach(path => {
     ]
   })
   .then(html => {
-    fs.writeFileSync(`dist/${path.replace(/\//g, '|')}.index.html`, html)
+    fs.writeFileSync(`dist/${path.replace(/\//g, '-')}.index.html`, html)
   });
 })
 

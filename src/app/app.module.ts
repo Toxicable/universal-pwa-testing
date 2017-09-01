@@ -1,33 +1,39 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Route } from '@angular/router';
 import { AppComponent } from './app.component';
 
 @Component({
   selector: 'a',
   template: 'about'
 })
-export class AboutComponent{
+export class AboutComponent {
 
 }
 
 
-const appRoutes = [
+const appRoutes: Route[] = [
   {
     path: 'about',
     component: AboutComponent,
   },
   {
     path: 'home',
-    component: AboutComponent
+    component: AboutComponent,
+    children: [
+      {
+        path: 'homehome',
+        loadChildren: './lazy.ts#LazyModule'
+      },
+    ]
   },
   {
-  path: '',
-  loadChildren: './lazy.ts#LazyModule'
+    path: '',
+    loadChildren: './lazy.ts#LazyModule'
   },
   {
-  path: 'hello',
-  loadChildren: './lazy.ts#LazyModule'
+    path: 'hello',
+    loadChildren: './lazy.ts#LazyModule'
   }
 ];
 
@@ -39,7 +45,7 @@ const appRoutes = [
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
-    BrowserModule.withServerTransition({appId: 'my-app'})
+    BrowserModule.withServerTransition({ appId: 'my-app' })
   ],
   providers: [],
   bootstrap: [AppComponent]
