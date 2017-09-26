@@ -23,13 +23,22 @@ const appRoutes: Route[] = [
   },
   {
     path: 'home',
-    component: AboutComponent
+    component: AboutComponent,
+    children: [
+      {
+        path: 'homehome',
+        loadChildren: './lazy.ts#LazyModule'
+      },
+    ]
   },
   {
+<<<<<<< HEAD
     path: 'function-load-children',
     loadChildren: loadLazyModule
   },
   {
+=======
+>>>>>>> 51c014129cf0963b616925930e8016ed98d2e9ce
     path: '',
     loadChildren: './lazy.ts#LazyModule'
   },
